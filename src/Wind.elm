@@ -9,13 +9,13 @@ import Element.Background as Background
 import Element.Border as Border
 
 type alias WindModel = {
-    wind_direction: Float,
-    wind_speed: Float
+    wind_direction: Int,
+    wind_speed: Int
     }
 
 type WindMsg
-    = UpdateWindDirection Float
-    | UpdateWindSpeed Float
+    = UpdateWindDirection Int
+    | UpdateWindSpeed Int
 
 init : WindModel
 init = {
@@ -44,31 +44,34 @@ view model =
   )
 
 build_input param_name min max current_value message_type =
-    el []
-    (
-      Element.Input.slider
-      [
-          Element.height (Element.px 30)
-        , Element.behindContent
-          (Element.el
-              [ Element.width Element.fill
-              , Element.height (Element.px 2)
-              , Element.centerY
-              , Background.color Styles.colors.grey3
-              , Border.rounded 2
-              ]
-              Element.none
+    row [] [
+        el []
+          (
+            Element.Input.slider
+            [
+                Element.height (Element.px 30)
+              , Element.behindContent
+                (Element.el
+                    [ Element.width Element.fill
+                    , Element.height (Element.px 2)
+                    , Element.centerY
+                    , Background.color Styles.colors.grey3
+                    , Border.rounded 2
+                    ]
+                    Element.none
+                )
+            ]
+            { 
+              onChange = round >> message_type
+            , label =
+                Element.Input.labelAbove []
+                    (text param_name)
+            , min = min
+            , max = max
+            , step = Just 1
+            , value = toFloat current_value
+            , thumb = Element.Input.defaultThumb
+            }
           )
-      ]
-      { 
-        onChange = message_type
-      , label =
-          Element.Input.labelAbove []
-              (text param_name)
-      , min = min
-      , max = max
-      , step = Nothing
-      , value = current_value
-      , thumb = Element.Input.defaultThumb
-      }
-    )
+      , el [] (text (String.fromInt current_value))
+    ]
