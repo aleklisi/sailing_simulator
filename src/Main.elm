@@ -1,38 +1,41 @@
 module Main exposing (..)
 
+import Boat
 import Browser
 import Element exposing (..)
 import Element.Border as Border
+import Html exposing (Html)
 import MainBoard
 import Styles exposing (..)
 import Wind
 
 
 type alias Model =
-    { boat_direction : Int
-    , boat_speed : Int
-    , mainsail_angle : Int
+    { boat : Boat.BoatModel
     , wind : Wind.WindModel
     }
 
 
 type Msg
     = Wind Wind.WindMsg
+    | Boat Boat.BoatMsg
 
 
 init : Model
 init =
-    { boat_direction = 0
-    , boat_speed = 0
-    , mainsail_angle = 0
+    { boat = Boat.init
     , wind = Wind.init
     }
 
 
 update msg model =
-    { model | wind = Wind.update msg model.wind }
-
-
+    case msg of
+        Boat.BoatMsg boatMsg ->
+            ({model | boat = Boat.update boatMsg model.boat}, Cmd.none)
+        Wind.WindMsg windMsg -> 
+            ({model | wind = Wind.update windMsg model.wind}, Cmd.none)
+        
+view : Model -> Html Msg
 view model =
     layout
         fillAll
@@ -48,21 +51,29 @@ view model =
                 , width (fillPortion 1)
                 , height fill
                 ]
-                [ el
-                    [ Border.width 2
-                    , width fill
-                    , height fill
-                    ]
-                    (Wind.view model.wind)
-                , el
-                    [ Border.width 2
-                    , width fill
-                    , height fill
-                    ]
-                    (text "mini map")
+                [ wind_view model
+                , boat_view model
                 ]
             ]
         )
+
+
+wind_view model =
+    el
+        [ Border.width 2
+        , width fill
+        , height fill
+        ]
+        Wind (Wind.view model.wind)
+
+
+boat_view model =
+    el
+        [ Border.width 2
+        , width fill
+        , height fill
+        ]
+        Boat (Boat.view model.boat)
 
 
 main =
