@@ -2,7 +2,7 @@ module Main exposing (..)
 
 import Boat
 import Browser
-import Element exposing (..)
+import Element as E
 import Element.Border as Border
 import Html exposing (Html)
 import MainBoard
@@ -28,28 +28,30 @@ init =
     }
 
 
+update : Msg -> Model -> Model
 update msg model =
     case msg of
-        Boat.BoatMsg boatMsg ->
-            ({model | boat = Boat.update boatMsg model.boat}, Cmd.none)
-        Wind.WindMsg windMsg -> 
-            ({model | wind = Wind.update windMsg model.wind}, Cmd.none)
-        
+        Boat boatMsg ->
+            {model | boat = Boat.update boatMsg model.boat}
+        Wind windMsg ->
+            {model | wind = Wind.update windMsg model.wind}
+
+
 view : Model -> Html Msg
 view model =
-    layout
+    E.layout
         fillAll
-        (row fillAll
-            [ el
+        (E.row fillAll
+            [ E.el
                 [ Border.width 2
-                , width (fillPortion 2)
-                , height fill
+                , E.width (E.fillPortion 2)
+                , E.height E.fill
                 ]
-                (Element.html MainBoard.main)
-            , column
+                (E.html MainBoard.main)
+            , E.column
                 [ Border.width 2
-                , width (fillPortion 1)
-                , height fill
+                , E.width (E.fillPortion 1)
+                , E.height E.fill
                 ]
                 [ wind_view model
                 , boat_view model
@@ -59,21 +61,21 @@ view model =
 
 
 wind_view model =
-    el
+    E.el
         [ Border.width 2
-        , width fill
-        , height fill
+        , E.width E.fill
+        , E.height E.fill
         ]
-        Wind (Wind.view model.wind)
+        (E.map Wind (Wind.view model.wind))
 
 
 boat_view model =
-    el
+    E.el
         [ Border.width 2
-        , width fill
-        , height fill
+        , E.width E.fill
+        , E.height E.fill
         ]
-        Boat (Boat.view model.boat)
+        (E.map Boat (Boat.view model.boat))
 
 
 main =
