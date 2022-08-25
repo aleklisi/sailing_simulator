@@ -1,14 +1,12 @@
-module Wind exposing (WindModel, WindMsg, init, update, view)
+module Wind exposing (WindModel, WindMsg(..), init, update, view)
 
 import Angle
 import Axis3d
 import Camera3d
 import Color
+import CommonComponents
 import Direction3d
 import Element exposing (..)
-import Element.Background as Background
-import Element.Border as Border
-import Element.Input
 import Length
 import Pixels
 import Point3d
@@ -36,7 +34,6 @@ init =
     , wind_speed = 6
     }
 
-
 update msg model =
     case msg of
         UpdateWindDirection value ->
@@ -57,43 +54,11 @@ updateWindSpeed value model =
 view model =
     el []
         (column [ padding 10, spacing 7 ]
-            [ build_input "Wind direction" 0 360 model.wind_direction UpdateWindDirection
-            , build_input "Wind speed" -10 10 model.wind_speed UpdateWindSpeed
+            [ CommonComponents.build_input "Wind direction" 0 360 model.wind_direction UpdateWindDirection
+            , CommonComponents.build_input "Wind speed" -10 10 model.wind_speed UpdateWindSpeed
             , windArrow model
             ]
         )
-
-
-build_input param_name min max current_value message_type =
-    row []
-        [ el []
-            (Element.Input.slider
-                [ Element.height (Element.px 30)
-                , Element.behindContent
-                    (Element.el
-                        [ Element.width Element.fill
-                        , Element.height (Element.px 2)
-                        , Element.centerY
-                        , Background.color Styles.colors.grey3
-                        , Border.rounded 2
-                        ]
-                        Element.none
-                    )
-                ]
-                { onChange = round >> message_type
-                , label =
-                    Element.Input.labelAbove []
-                        (text param_name)
-                , min = min
-                , max = max
-                , step = Just 1
-                , value = toFloat current_value
-                , thumb = Element.Input.defaultThumb
-                }
-            )
-        , el [] (text (String.fromInt current_value))
-        ]
-
 
 windArrow model =
     let
